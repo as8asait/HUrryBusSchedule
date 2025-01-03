@@ -24,14 +24,25 @@ public class TripService {
     public List<Trip> getTrips(){
         return tripRepository.findAll();
     }
+
     public List<Trip> getTripsByRouteId(String route){
         return tripRepository.getTripsByRoute(route);
     }
+
     public void addTrip(Trip trip){
         Optional<Trip> tripOptional = tripRepository.findTripById(trip.getId());
         if (tripOptional.isPresent()){
             throw new IllegalArgumentException("Trip already exists!");
         }
         tripRepository.save(trip);
+    }
+
+    public void deleteTrip(Long id){
+        Optional<Trip> tripOpt = tripRepository.findTripById(id);
+
+        if(!tripOpt.isPresent()){
+            throw new IllegalArgumentException("Trip does not exist!");
+        }
+        tripRepository.deleteById(id);
     }
 }

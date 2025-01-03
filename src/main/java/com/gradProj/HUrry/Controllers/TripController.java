@@ -39,4 +39,8 @@ public class TripController {
         return ResponseEntity.ok(tripService.getAllTrips(pageable));
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteTrip(@PathVariable Long id) {
+        tripService.deleteTrip(id);
+    }
 }
