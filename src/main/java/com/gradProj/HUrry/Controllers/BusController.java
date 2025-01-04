@@ -18,12 +18,12 @@ public class BusController {
         this.busService = busService;
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<BusDto> addBus(@RequestBody BusDto busDto) {
         return ResponseEntity.ok(busService.createBus(busDto));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Page<Bus>> getAllBuses(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
