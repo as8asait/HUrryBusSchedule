@@ -6,8 +6,12 @@ import lombok.Data;
 @Entity
 @Data
 public class Station {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long station_id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
     private String station_name;
+    private double lat;
+    private double lon;
+    private double distance;
 }

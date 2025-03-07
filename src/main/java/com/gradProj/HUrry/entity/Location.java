@@ -8,16 +8,10 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Bus {
+public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bus_id;
-
-    private String busNumber;
-
-    private String route;
-
-    private String status;
-
-
+    private Long id;
+    private double latitude;
+    private double longitude;
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
+@Data
 public class BusSchedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
