@@ -8,4 +8,5 @@ public class StationDto {
     private double lat;
     private double lon;
     private double distance;
+    private double time;
 }

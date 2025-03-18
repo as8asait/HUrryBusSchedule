@@ -5,23 +5,35 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gradProj.HUrry.Dto.StationDto;
 import com.gradProj.HUrry.Repositories.StationRepository;
 import com.gradProj.HUrry.entity.Station;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class StationService {
     private final StationRepository stationRepo;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     private static final String GEOAPIFY_API_KEY = "c94061a37e1b48bb902f8ca597534b62";
-    private static final String REVERSE_GEOCODING_URL = "https://api.geoapify.com/v1/geocode/reverse";
+    private static final String GEOCODING_API_URL = "https://api.geoapify.com/v1/geocode/search";
     private static final String ROUTING_URL = "https://api.geoapify.com/v1/routing";
 
 
@@ -74,61 +86,88 @@ public class StationService {
         return stationDto;
     }
 
-    public static double calculateDistance(double userLat, double userLon, double stationLat, double stationLon) {
-        final int R = 6371; // Radius of the Earth in kilometers
-        double latDistance = Math.toRadians(stationLat - userLat);
-        double lonDistance = Math.toRadians(stationLon - userLon);
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(userLat)) * Math.cos(Math.toRadians(stationLat))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c * 1000; // Distance in meters
-    }
-
-    // Find closest stations within 4000 meters
     public List<StationDto> findClosestStations(double userLat, double userLon) {
         List<StationDto> closestStations = new ArrayList<>();
+        List<StationDto> stationDtoList = new ArrayList<>();
+
         List<Station> allStations = stationRepo.findAll();
 
         for (Station station : allStations) {
-            double distance = calculateDistance(userLat, userLon, station.getLat(), station.getLon());
-            if (distance <= 15000) {
-                closestStations.add(transferToStationDto(station,distance);
+            StationDto stationDto = transferToStationDto(station);
+            fillStationData(userLat, userLon, station.getLat(), station.getLon(),stationDto);
+            stationDtoList.add(stationDto);
+            if(stationDto.getDistance()<=15) {
+                closestStations.add(stationDto);
             }
         }
-
-        return closestStations.stream().sorted(Comparator.comparingDouble(StationDto::getDistance).reversed()).toList();
+        if (closestStations.isEmpty()) {
+            return stationDtoList.stream().sorted(Comparator.comparingDouble(StationDto::getDistance)).toList();
+        }
+        return closestStations.stream().sorted(Comparator.comparingDouble(StationDto::getDistance)).toList();
     }
 
-    private StationDto transferToStationDto( Station station, double distance){
-        StationDto stationDto = new StationDto();
-        stationDto.setStation_name(station.getStation_name());
-        stationDto.setLat(station.getLat());
-        stationDto.setLon(station.getLon());
-        stationDto.setDistance(distance);
-        return stationDto;
-    }
-
-    // Reverse geocode to get station address
-    public String reverseGeocode(double lat, double lon) throws Exception {
-        String url = String.format("%s?lat=%f&lon=%f&apiKey=%s", REVERSE_GEOCODING_URL, lat, lon, GEOAPIFY_API_KEY);
+    public JsonNode forwardGeocode(String address) throws Exception {
+        String url = String.format("%s?text=%s&apiKey=%s", GEOCODING_API_URL, address, GEOAPIFY_API_KEY);
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(url);
             String response = EntityUtils.toString(httpClient.execute(request).getEntity());
-            JsonNode jsonNode = new ObjectMapper().readTree(response);
-            return jsonNode.path("features").get(0).path("properties").path("formatted").asText();
+            return new ObjectMapper().readTree(response);
         }
     }
 
-    // Get route from user location to station
-    public String getRoute(double userLat, double userLon, double stationLat, double stationLon) throws Exception {
-        String url = String.format("%s?waypoints=%f,%f|%f,%f&mode=drive&apiKey=%s",
-                ROUTING_URL, userLat, userLon, stationLat, stationLon, GEOAPIFY_API_KEY);
+//    public String getRoute(double userLat, double userLon, double stationLat, double stationLon) throws Exception {
+//        String url = String.format("%s?waypoints=%f,%f|%f,%f&mode=drive&apiKey=%s",
+//                ROUTING_URL, userLat, userLon, stationLat, stationLon, GEOAPIFY_API_KEY);
+//
+//        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+//            HttpGet request = new HttpGet(url);
+//            String response = EntityUtils.toString(httpClient.execute(request).getEntity());
+//            JsonNode jsonNode = new ObjectMapper().readTree(response);
+//            if (jsonNode.path("features").isEmpty()) {
+//
+//                throw new Exception("No address found for the given coordinates.");
+//            }
+//            String distance = jsonNode.path("features").get(0).path("properties").path("distance").asText();
+//            String time = jsonNode.path("features").get(0).path("properties").path("time").asText();
+//
+//        }
+//        return null;
+//    }
 
+    public void fillStationData (double userLat, double userLon, double stationLat, double stationLon, StationDto stationDto){
+        String url =  String.format("%s?waypoints=%.14f,%.14f%%7C%.14f,%.14f&mode=drive&apiKey=%s",
+                ROUTING_URL, userLat, userLon, stationLat, stationLon, GEOAPIFY_API_KEY);
+//        String url = "https://api.geoapify.com/v1/routing?waypoints=" + userLat + "," + userLon + "" + stationLat + "," + stationLon + "&mode=drive&apiKey=" + GEOAPIFY_API_KEY;
+//        try {
+//            ResponseEntity<String> response = restTemplate.getForEntity(new URI(url), String.class);
+//            JsonNode jsonNode = new ObjectMapper().readTree(response.getBody());
+//
+//            if (jsonNode.path("features").isEmpty()) {
+//                throw new Exception("No address found for the given coordinates.");
+//            }
+//
+//            stationDto.setDistance(Double.parseDouble(jsonNode.path("features").get(0).path("properties").path("distance").asText()));
+//            stationDto.setTime(Double.parseDouble(jsonNode.path("features").get(0).path("properties").path("time").asText()));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(url);
-            return EntityUtils.toString(httpClient.execute(request).getEntity());
+            HttpResponse httpResponse = httpClient.execute(request);
+            String response = EntityUtils.toString(httpResponse.getEntity());
+            JsonNode jsonNode = new ObjectMapper().readTree(response);
+            if (jsonNode.path("features").isEmpty()) {
+                throw new Exception("No address found for the given coordinates.");
+            }
+            double distanceInKm=Double.parseDouble(jsonNode.path("features").get(0).path("properties").path("distance").asText())/1000;
+            stationDto.setDistance(distanceInKm);
+            double timeInMin=Double.parseDouble(jsonNode.path("features").get(0).path("properties").path("time").asText())/60;
+            stationDto.setTime(timeInMin);
+
+        } catch (Exception e){
+            log.error(e.getMessage());
+            log.error("Error while calling geoapify");
         }
     }
 }

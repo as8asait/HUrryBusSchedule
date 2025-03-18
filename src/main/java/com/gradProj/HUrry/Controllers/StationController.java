@@ -1,5 +1,6 @@
 package com.gradProj.HUrry.Controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.gradProj.HUrry.Dto.StationDto;
 import com.gradProj.HUrry.Services.StationService;
 import com.gradProj.HUrry.entity.Station;
@@ -44,19 +45,23 @@ public class StationController {
     }
 
     @GetMapping("/closest-stations")
-    public List<StationDto> getClosestStations(@RequestParam double lat, @RequestParam double lon) {
+    public List<StationDto> getClosestStations(@RequestParam double lat, @RequestParam double lon) throws Exception {
         return stationService.findClosestStations(lat, lon);
     }
-    @GetMapping("/station-address")
-    public String getStationAddress(@RequestParam double lat, @RequestParam double lon) throws Exception {
-        return stationService.reverseGeocode(lat, lon);
-    }
+//    @GetMapping("/station-address")
+//    public String getStationAddress(@RequestParam double lat, @RequestParam double lon) throws Exception {
+//        return stationService.reverseGeocode(lat, lon);
 
-    @GetMapping("/route")
-    public String getRoute(@RequestParam double userLat, @RequestParam double userLon,
-                           @RequestParam double stationLat, @RequestParam double stationLon) throws Exception {
-        return stationService.getRoute(userLat, userLon, stationLat, stationLon);
-    }
+//    @GetMapping("/find-station")
+//    public JsonNode forwardGeocode(@RequestParam String address) throws Exception {
+//        return stationService.forwardGeocode(address);
+//    }
+//
+//    @GetMapping("/route")
+//    public String getRoute(@RequestParam double userLat, @RequestParam double userLon,
+//                           @RequestParam double stationLat, @RequestParam double stationLon) throws Exception {
+//        return stationService.getRoute(userLat, userLon, stationLat, stationLon);
+//    }
 
 
 }
