@@ -39,7 +39,7 @@ public class StationController {
         return stationService.updateStation(id, stationDto);
     }
 
-    @GetMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public void deleteStation(@PathVariable int id) {
         stationService.deleteStationById(id);
     }

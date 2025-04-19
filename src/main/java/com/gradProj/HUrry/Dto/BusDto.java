@@ -8,7 +8,9 @@ import lombok.Data;
 public class BusDto {
 
     private String busNumber;
+
     private String route;
+
     private String status;
 
 }
