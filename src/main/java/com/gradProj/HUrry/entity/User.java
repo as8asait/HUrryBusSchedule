@@ -17,7 +17,8 @@ public class User {
     private Long id;
 
     @NotBlank(message = "Full name is required")
-    private String userName;
+    @Column(unique = true)
+    private String username;
 
     @Email(message = "Invalid email format")
     @NotBlank(message = "Email is required")
@@ -29,6 +30,11 @@ public class User {
 
     private String phoneNumber;
 
-    private String role; //student or operator
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    public enum Role {
+        STUDENT, OPERATOR, DRIVER
+    } //student or operator
 }
 

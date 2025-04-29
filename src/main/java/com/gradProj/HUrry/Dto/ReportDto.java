@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class ReportDTO {
+public class ReportDto {
     private String category;
     private String description;
     private String brand;

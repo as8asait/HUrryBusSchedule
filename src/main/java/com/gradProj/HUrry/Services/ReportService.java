@@ -1,6 +1,6 @@
 package com.gradProj.HUrry.Services;
 
-import com.gradProj.HUrry.Dto.ReportDTO;
+import com.gradProj.HUrry.Dto.ReportDto;
 import com.gradProj.HUrry.Repositories.ReportRepository;
 import com.gradProj.HUrry.entity.Report;
 import org.modelmapper.ModelMapper;
@@ -19,48 +19,48 @@ public class ReportService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public ReportDTO createReport(ReportDTO reportDTO) {
+    public ReportDto createReport(ReportDto reportDTO) {
         Report report = convertToEntity(reportDTO);
         Report savedReport = reportRepository.save(report);
         return convertToDTO(savedReport);
     }
 
-    public List<ReportDTO> getAllReports() {
+    public List<ReportDto> getAllReports() {
         return reportRepository.findAll()
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<ReportDTO> getReportsByCategory(String category) {
+    public List<ReportDto> getReportsByCategory(String category) {
         return reportRepository.findByCategory(category)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<ReportDTO> getReportsByLocation(String locationType) {
+    public List<ReportDto> getReportsByLocation(String locationType) {
         return reportRepository.findByLocationType(locationType)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<ReportDTO> getReportsByCategoryAndLocation(String category, String locationType) {
+    public List<ReportDto> getReportsByCategoryAndLocation(String category, String locationType) {
         return reportRepository.findByCategoryAndLocationType(category, locationType)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<ReportDTO> getReportsByStudentEmail(String email) {
+    public List<ReportDto> getReportsByStudentEmail(String email) {
         return reportRepository.findByStudentEmail(email)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    public ReportDTO updateReportStatus(Long id, String status) {
+    public ReportDto updateReportStatus(Long id, String status) {
         Report report = reportRepository.findById(id).orElseThrow(() ->
                 new RuntimeException("Report not found"));
         report.setStatus(status);
@@ -68,11 +68,11 @@ public class ReportService {
         return convertToDTO(updatedReport);
     }
 
-    private ReportDTO convertToDTO(Report report) {
-        return modelMapper.map(report, ReportDTO.class);
+    private ReportDto convertToDTO(Report report) {
+        return modelMapper.map(report, ReportDto.class);
     }
 
-    private Report convertToEntity(ReportDTO reportDTO) {
+    private Report convertToEntity(ReportDto reportDTO) {
         return modelMapper.map(reportDTO, Report.class);
     }
 

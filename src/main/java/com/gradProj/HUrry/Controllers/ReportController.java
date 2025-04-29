@@ -1,6 +1,6 @@
 package com.gradProj.HUrry.Controllers;
 
-import com.gradProj.HUrry.Dto.ReportDTO;
+import com.gradProj.HUrry.Dto.ReportDto;
 import com.gradProj.HUrry.Services.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,33 +16,33 @@ public class ReportController {
     @Autowired
     private ReportService reportService;
 
-    @PostMapping
+    @PostMapping("/create")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<ReportDTO> createReport(@RequestBody ReportDTO reportDTO) {
+    public ResponseEntity<ReportDto> createReport(@RequestBody ReportDto reportDTO) {
         return ResponseEntity.ok(reportService.createReport(reportDTO));
     }
 
-    @GetMapping
+    @GetMapping("/getAll")
     @PreAuthorize("hasRole('OPERATOR')&&('STUDENT')")
-    public ResponseEntity<List<ReportDTO>> getAllReports() {
+    public ResponseEntity<List<ReportDto>> getAllReports() {
         return ResponseEntity.ok(reportService.getAllReports());
     }
 
     @GetMapping("/category/{category}")
     @PreAuthorize("hasRole('OPERATOR')")
-    public ResponseEntity<List<ReportDTO>> getReportsByCategory(@PathVariable String category) {
+    public ResponseEntity<List<ReportDto>> getReportsByCategory(@PathVariable String category) {
         return ResponseEntity.ok(reportService.getReportsByCategory(category));
     }
 
     @GetMapping("/location/{locationType}")
     @PreAuthorize("hasRole('OPERATOR')")
-    public ResponseEntity<List<ReportDTO>> getReportsByLocation(@PathVariable String locationType) {
+    public ResponseEntity<List<ReportDto>> getReportsByLocation(@PathVariable String locationType) {
         return ResponseEntity.ok(reportService.getReportsByLocation(locationType));
     }
 
     @GetMapping("/search")
     @PreAuthorize("hasRole('OPERATOR')")
-    public ResponseEntity<List<ReportDTO>> searchReports(
+    public ResponseEntity<List<ReportDto>> searchReports(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String locationType) {
 
@@ -59,13 +59,13 @@ public class ReportController {
 
     @GetMapping("/my-reports")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<List<ReportDTO>> getMyReports(@RequestParam String email) {
+    public ResponseEntity<List<ReportDto>> getMyReports(@RequestParam String email) {
         return ResponseEntity.ok(reportService.getReportsByStudentEmail(email));
     }
 
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('OPERATOR')")
-    public ResponseEntity<ReportDTO> updateReportStatus(
+    public ResponseEntity<ReportDto> updateReportStatus(
             @PathVariable Long id,
             @RequestParam String status) {
         return ResponseEntity.ok(reportService.updateReportStatus(id, status));

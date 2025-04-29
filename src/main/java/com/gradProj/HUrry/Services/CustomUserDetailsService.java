@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -19,9 +20,9 @@ public class CustomUserDetailsService implements UserDetailsService {
            //     .orElseThrows(() -> new UsernameNotFoundException("User not found with username: " + username));
 
         return org.springframework.security.core.userdetails.User
-                .withUsername(user.getUserName())
+                .withUsername(user.getUsername())
                 .password(user.getPassword())
-                .authorities(user.getRole())
+                .authorities(String.valueOf(user.getRole()))
                 .accountExpired(false)
                 .accountLocked(false)
                 .credentialsExpired(false)
