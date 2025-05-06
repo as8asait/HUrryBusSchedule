@@ -5,6 +5,7 @@ import com.gradProj.HUrry.Dto.StationDto;
 import com.gradProj.HUrry.Services.StationService;
 import com.gradProj.HUrry.entity.Station;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class StationController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('STUDENT')")
     public List<StationDto> getAllStations() {
         return stationService.getAllStations();
     }

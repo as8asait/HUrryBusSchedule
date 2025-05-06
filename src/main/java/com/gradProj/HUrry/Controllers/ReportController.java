@@ -23,7 +23,7 @@ public class ReportController {
     }
 
     @GetMapping("/getAll")
-    @PreAuthorize("hasRole('OPERATOR')&&('STUDENT')")
+    @PreAuthorize("hasRole('OPERATOR')")
     public ResponseEntity<List<ReportDto>> getAllReports() {
         return ResponseEntity.ok(reportService.getAllReports());
     }

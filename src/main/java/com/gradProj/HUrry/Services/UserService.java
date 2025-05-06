@@ -37,8 +37,8 @@ public class UserService {
         userRepository.save(user);
     }
 
-    private User convertToEntity(UserSignupDto reportDTO) {
-        return modelMapper.map(reportDTO, User.class);
+    private User convertToEntity(UserSignupDto signupDto) {
+        return modelMapper.map(signupDto, User.class);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.gradProj.HUrry.Controllers;
 
 import com.gradProj.HUrry.Dto.UserLoginDto;
+import com.gradProj.HUrry.Services.JwtUtil;
 import com.gradProj.HUrry.Services.UserService;
 import com.gradProj.HUrry.entity.User;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api2")
+@RequestMapping("/api/auth")
 public class LogInController {
 
     private static final Logger logger = LoggerFactory.getLogger(LogInController.class);
@@ -28,6 +29,9 @@ public class LogInController {
 
     @Value("${jwt.secret}") // Use the same secret key as in the filter
     private String SECRET_KEY;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Autowired
     public LogInController(UserService userService, PasswordEncoder passwordEncoder) {
@@ -49,45 +53,22 @@ public class LogInController {
             return ResponseEntity.status(401).body("Invalid password");
         }
 
-        // Validate role (as an enum)
-        User.Role role = user.getRole();
-        if (role == null) {
-            logger.error("Login failed: User role is not defined for email {}", userLoginDto.getEmail());
-            return ResponseEntity.status(500).body(createErrorResponse("User role not defined"));
-        }
-        // Check if the role is valid (enum validation)
-        if (!isRoleValid(role)) {
-            logger.error("Login failed: Invalid role '{}' for user {}", role, userLoginDto.getEmail());
-            return ResponseEntity.status(500).body(createErrorResponse("Invalid user role"));
-        }
         // Generate token (assuming this method exists in your setup)
         String token = generateToken(user);
 
-        // Prepare successful response
         Map<String, Object> response = new HashMap<>();
-        response.put("role", role);
         response.put("token", token);
-        response.put("user", user);
 
-        logger.info("User {} logged in successfully with role {}", user.getEmail(), role);
+
+        logger.info("User {} logged in successfully", user.getEmail());
         return ResponseEntity.ok(response);
     }
 
-    // Utility method to validate if the `role` matches an allowed Role
-    private boolean isRoleValid(User.Role role) {
-        return role == User.Role.STUDENT || role == User.Role.OPERATOR || role == User.Role.DRIVER;
-    }
-
-    // Utility method to generate a standardized error response
-    private Map<String, String> createErrorResponse(String message) {
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("error", message);
-        return errorResponse;
-    }
 
     // Stub method for token generation (to be implemented if not existing)
     private String generateToken(User user) {
         // Your logic for generating JWT or authentication token should go here
-        return "generated_token_placeholder";
+
+        return jwtUtil.generateToken(user.getEmail(),user.getRole().name());
     }
 }
