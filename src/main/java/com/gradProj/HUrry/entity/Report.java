@@ -41,5 +41,6 @@ public class Report {
     private String status = "pending";
     private String studentName;
     private String studentEmail;
+    private String phoneNumber;
 
 }

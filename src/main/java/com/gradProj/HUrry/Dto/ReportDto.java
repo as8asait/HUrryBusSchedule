@@ -22,6 +22,6 @@ public class ReportDto {
     private List<String> photoUrls;
     private String studentName;
     private String studentEmail;
-
+    private String phoneNumber;
 
 }

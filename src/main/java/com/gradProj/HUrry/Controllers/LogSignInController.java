@@ -1,6 +1,7 @@
 package com.gradProj.HUrry.Controllers;
 
 import com.gradProj.HUrry.Dto.UserLoginDto;
+import com.gradProj.HUrry.Dto.UserSignupDto;
 import com.gradProj.HUrry.Services.JwtUtil;
 import com.gradProj.HUrry.Services.UserService;
 import com.gradProj.HUrry.entity.User;
@@ -19,10 +20,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth")
-public class LogInController {
+@RequestMapping("/auth")
+public class LogSignInController {
 
-    private static final Logger logger = LoggerFactory.getLogger(LogInController.class);
+    private static final Logger logger = LoggerFactory.getLogger(LogSignInController.class);
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -34,9 +35,16 @@ public class LogInController {
     private JwtUtil jwtUtil;
 
     @Autowired
-    public LogInController(UserService userService, PasswordEncoder passwordEncoder) {
+    public LogSignInController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+    }
+
+
+    @PostMapping("/signup")
+    public ResponseEntity<String> registerUser(@RequestBody UserSignupDto userSignupDTO) {
+        userService.registerUser(userSignupDTO);
+        return ResponseEntity.ok("User registered successfully!");
     }
 
     @PostMapping("/login")

@@ -29,9 +29,6 @@ import java.util.Optional;
 public class StationService {
     private final StationRepository stationRepo;
 
-    @Autowired
-    private RestTemplate restTemplate;
-
     private static final String GEOAPIFY_API_KEY = "c94061a37e1b48bb902f8ca597534b62";
     private static final String GEOCODING_API_URL = "https://api.geoapify.com/v1/geocode/search";
     private static final String ROUTING_URL = "https://api.geoapify.com/v1/routing";
