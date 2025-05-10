@@ -22,7 +22,6 @@ public class Report {
     private String itemsInside;
     private String uniqueFeatures;
 
-
     private LocalDate dateLost;
 
     private LocalTime timeApproximate;
@@ -39,6 +38,7 @@ public class Report {
     private List<String> photoUrls;
 
     private String status = "pending";
+    private String isEditing = "false";
     private String studentName;
     private String studentEmail;
     private String phoneNumber;
