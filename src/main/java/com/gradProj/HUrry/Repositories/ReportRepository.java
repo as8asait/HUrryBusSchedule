@@ -11,5 +11,5 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     List<Report> findByCategory(String category);
     List<Report> findByLocationType(String locationType);
     List<Report> findByCategoryAndLocationType(String category, String locationType);
-    List<Report> findByStudentEmail(String studentEmail);
+    List<Report> findByEmail(String studentEmail);
 }

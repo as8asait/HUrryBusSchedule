@@ -3,6 +3,7 @@ package com.gradProj.HUrry.Dto;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -15,13 +16,13 @@ public class ReportDto {
     private String itemsInside;
     private String uniqueFeatures;
     private LocalDate dateLost;
-    private LocalDate timeApproximate;
+    private LocalTime timeApproximate;
     private String locationType;
     private String station;
     private String busNumber;
     private List<String> photoUrls;
-    private String studentName;
-    private String studentEmail;
+    private String name;
+    private String email;
     private String phoneNumber;
 
 }

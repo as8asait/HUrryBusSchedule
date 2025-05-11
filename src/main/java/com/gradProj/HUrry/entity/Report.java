@@ -1,5 +1,6 @@
 package com.gradProj.HUrry.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,11 +23,13 @@ public class Report {
     private String itemsInside;
     private String uniqueFeatures;
 
+    //@JsonFormat(pattern = "yyyy-MM-dd")  // Format for JSON serialization
     private LocalDate dateLost;
 
+   // @JsonFormat(pattern = "HH:mm")
     private LocalTime timeApproximate;
 
-    private LocalDate dateSubmitted;// initialize to current date
+    private LocalDate dateSubmitted = LocalDate.now();// initialize to current date
 
     private LocalDate foundMissingDate;
 
@@ -39,8 +42,8 @@ public class Report {
 
     private String status = "pending";
     private String isEditing = "false";
-    private String studentName;
-    private String studentEmail;
+    private String name;
+    private String email;
     private String phoneNumber;
 
 }

@@ -54,7 +54,7 @@ public class ReportService {
     }
 
     public List<ReportDto> getReportsByStudentEmail(String email) {
-        return reportRepository.findByStudentEmail(email)
+        return reportRepository.findByEmail(email)
                 .stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
